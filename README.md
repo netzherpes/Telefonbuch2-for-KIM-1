@@ -31,6 +31,7 @@ CHANGE a line: Switch to data entry mode (ESC)
 and enter an identifying text to change,
 press 'Enter' and insert a new Data Entry. 
 
+An * indicates, that the Line was deleted
 
 ADD an entry: Switch to data entry mode (ESC) 
 and type '>'  and 'enter'. Then add a new line.
