@@ -41,6 +41,8 @@ It will be deleted, an Entry added
 and a '>' will be added again to 
 indicate the new end of the File.
 
+To get back to SEARCH mode hit ESC again
+
 LOAD a File with ~P where P is a 
 indicator for your File, as you can 
 save more than one files on one tape.
