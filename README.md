@@ -15,7 +15,7 @@ at $0201 by Hand! <br>
 The Program saves the Data on tape,
 so this needs to be initialized once.
 
-Start the program at $0000
+Start the program at $0000<br>
 After the start you are in search mode.
 Enter a keyword and whole matching 
 Lines of text will be presented. 
