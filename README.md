@@ -6,11 +6,11 @@ by Herwig Feichtinger
 
 # Instructions:
 
-Prepare a first Data Entry 
-at $0201 by Hand! 
-0201 0D
-0202 3E
-0203 00
+Prepare a first Data Entry <br>
+at $0201 by Hand! <br>
+0201 0D<br>
+0202 3E<br>
+0203 00<br>
 
 The Program saves the Data on tape,
 so this needs to be initialized once.
