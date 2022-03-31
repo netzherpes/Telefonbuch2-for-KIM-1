@@ -27,13 +27,15 @@ Lines of text will be presented.
 SWITCH to entry mode by pressing ESC
 After you added or changed an entry you
 
-CHANGE a line: Enter an identifying 
-text to change, press 'Enter' and 
-insert a new Data Entry. 
+CHANGE a line: Switch to data entry mode (ESC) 
+and enter an identifying text to change,
+press 'Enter' and insert a new Data Entry. 
 
-ADD an entry by typing '>'  and 'enter' 
-(after the ESC). Background: the last
-Byte of your Data File is a '>'. 
+
+ADD an entry: Switch to data entry mode (ESC) 
+and type '>'  and 'enter'. Then add a new line.
+Background: the last Byte of your 
+Data File is a '>'. 
 It will be deleted, an Entry added 
 and a '>' will be added again to 
 indicate the new end of the File.
