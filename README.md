@@ -1,7 +1,7 @@
 # Telefonbuch2-for-KIM-1
-Telefonbuch 2.0
-by Herwig Feichtinger 
-(c) 1981 in Anwendungsbeispiele
+Telefonbuch 2.0<br>
+by Herwig Feichtinger <br>
+(c) 1981 in Anwendungsbeispiele<br>
     für den Mikroprozessor 6502
 
 # Instructions:
