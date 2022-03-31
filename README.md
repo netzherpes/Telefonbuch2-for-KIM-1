@@ -5,6 +5,8 @@ by Herwig Feichtinger <br>
 (c) 1981 in Anwendungsbeispiele<br>
     für den Mikroprozessor 6502
 
+![Phonebook_2.0](https://github.com/netzherpes/Telefonbuch2-for-KIM-1/raw/main/images/phonebook2.png)
+
 Advanced Version of https://github.com/netzherpes/phonebook-for-KIM-1
 
 # Instructions:
