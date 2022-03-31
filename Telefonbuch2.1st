@@ -1,0 +1,328 @@
+ca65 V2.19 - Git 4f87c7c
+Main file   : .\Telefonbuch_2.S
+Current file: .\Telefonbuch_2.S
+
+000000r 1               ;***************************************************************
+000000r 1               ;* Telefonbuch 2.0                                             *
+000000r 1               ;* by Herwig Feichtinger                                       *
+000000r 1               ;* (c) 1981 in Anwendungsbeispiele                             *
+000000r 1               ;*     für den Mikroprozessor 6502                             *
+000000r 1               ;*                                                             *
+000000r 1               ;* Instructions:                                               *
+000000r 1               ;* =============                                               *
+000000r 1               ;*                                                             *
+000000r 1               ;* Prepare a first Data Entry                                  *
+000000r 1               ;* at $0201 by Hand!                                           *
+000000r 1               ;* 0201 0D                                                     *
+000000r 1               ;* 0202 3E                                                     *
+000000r 1               ;* 0203 00                                                     *
+000000r 1               ;*                                                             *
+000000r 1               ;* The Program saves the Data on tape,                         *
+000000r 1               ;* so this needs to be initialized once.                       *
+000000r 1               ;*                                                             *
+000000r 1               ;* Start the program at $0000                                  *
+000000r 1               ;* After the start you are in search mode.                     *
+000000r 1               ;* Enter a keyword and whole matching                          *
+000000r 1               ;* Lines of text will be presented.                            *
+000000r 1               ;*                                                             *
+000000r 1               ;* To change or add an entry press ESC                         *
+000000r 1               ;* change a line: Enter the identifying                        *
+000000r 1               ;* text to change, press Enter and                             *
+000000r 1               ;* insert a new Data Entry.                                    *
+000000r 1               ;*                                                             *
+000000r 1               ;* To add an entry Type >  and enter                           *
+000000r 1               ;* (after the ESC). Background: the last                       *
+000000r 1               ;* Byte of your Data File is a '>'.                            *
+000000r 1               ;* It will be deleted, an Entry added                          *
+000000r 1               ;* and a '>' will be added again to                            *
+000000r 1               ;* indicate the new end of the File.                           *
+000000r 1               ;*                                                             *
+000000r 1               ;* LOAD a File with ~P where P is a                            *
+000000r 1               ;* indicator for your File, as you can                         *
+000000r 1               ;* save more than one files on one tape.                       *
+000000r 1               ;*                                                             *
+000000r 1               ;* SAVE a File with ^P                                         *
+000000r 1               ;*                                                             *
+000000r 1               ;***************************************************************
+000000r 1               
+000000r 1               RET      =       $0d
+000000r 1               ESC      =       $1b
+000000r 1               asterix  =       $2a
+000000r 1               QUEST    =       $3f
+000000r 1               HAT      =       $5e
+000000r 1               TILDE    =       $7e
+000000r 1               
+000000r 1               SAD      =       $1740
+000000r 1               PADD     =       $1741
+000000r 1               SBD      =       $1742
+000000r 1               TimINIT  =       $1744
+000000r 1               TIMER    =       $1747
+000000r 1               hyBYT    =       $17f7
+000000r 1               loBYT    =       $17f8
+000000r 1               RDCHT    =       $1a24
+000000r 1               RDBIT    =       $1a41
+000000r 1               PRTPNT   =       $1e1e
+000000r 1               CR       =       $1e2f
+000000r 1               GETCH    =       $1e5a
+000000r 1               INIT1    =       $1e8c
+000000r 1               SPACE    =       $1e9e
+000000r 1               OUTCH    =       $1ea0
+000000r 1               INCPT    =       $1f63
+000000r 1               
+000000r 1                        .org    $0000
+000000  1  20 2F 1E     init:    jsr     CR
+000003  1  A9 3F                 lda     #QUEST
+000005  1  20 A0 1E              jsr     OUTCH
+000008  1  20 9E 1E              jsr     SPACE
+00000B  1  A9 02                 lda     #$02
+00000D  1  85 FB                 sta     z:L00FB
+00000F  1  A9 00                 lda     #$00
+000011  1  85 FA                 sta     z:L00FA
+000013  1  A2 18                 ldx     #$18
+000015  1  95 DE        @L0015:  sta     z:Buffer-1,x
+000017  1  CA                    dex
+000018  1  D0 FB                 bne     @L0015
+00001A  1  4C CB 01              jmp     LOADchk
+00001D  1               
+00001D  1  C9 1B        L001D:   cmp     #ESC
+00001F  1  D0 07                 bne     @L0028
+000021  1  A9 FF                 lda     #$ff
+000023  1  85 DF                 sta     z:Buffer
+000025  1  20 5A 1E     @L0025:  jsr     GETCH
+000028  1  C9 0D        @L0028:  cmp     #RET
+00002A  1  F0 07                 beq     @L0033
+00002C  1  95 E0                 sta     z:Buffer+1,x
+00002E  1  E8                    inx
+00002F  1  E0 15                 cpx     #$15
+000031  1  D0 F2                 bne     @L0025
+000033  1  20 63 1F     @L0033:  jsr     INCPT
+000036  1  A0 00                 ldy     #$00
+000038  1  B1 FA                 lda     (L00FA),y
+00003A  1  F0 C4                 beq     init
+00003C  1  C9 0D                 cmp     #RET
+00003E  1  D0 F3                 bne     @L0033
+000040  1  A2 00        @L0040:  ldx     #$00
+000042  1  C8           @L0042:  iny
+000043  1  B5 E0                 lda     z:Buffer+1,x
+000045  1  F0 0D                 beq     @L0054
+000047  1  B1 FA                 lda     (L00FA),y
+000049  1  C9 0D                 cmp     #RET
+00004B  1  F0 E6                 beq     @L0033
+00004D  1  D5 E0                 cmp     z:Buffer+1,x
+00004F  1  D0 EF                 bne     @L0040
+000051  1  E8                    inx
+000052  1  D0 EE                 bne     @L0042
+000054  1  A5 DF        @L0054:  lda     z:Buffer
+000056  1  D0 19                 bne     @L0071
+000058  1  20 2F 1E              jsr     CR
+00005B  1  A0 01                 ldy     #$01
+00005D  1  B1 FA        @L005D:  lda     (L00FA),y
+00005F  1  F0 0E                 beq     @L006F
+000061  1  C9 0D                 cmp     #RET
+000063  1  F0 CE                 beq     @L0033
+000065  1  84 F9                 sty     z:L00F9
+000067  1  20 A0 1E              jsr     OUTCH
+00006A  1  A4 F9                 ldy     z:L00F9
+00006C  1  C8                    iny
+00006D  1  D0 EE                 bne     @L005D
+00006F  1  F0 8F        @L006F:  beq     init
+000071  1               
+000071  1  A0 02        @L0071:  ldy     #$02
+000073  1  B1 FA        @L0073:  lda     (L00FA),y
+000075  1  F0 19                 beq     @L0090
+000077  1  C9 0D                 cmp     #RET
+000079  1  F0 03                 beq     @L007E
+00007B  1  C8                    iny
+00007C  1  D0 F5                 bne     @L0073
+00007E  1  84 DF        @L007E:  sty     z:Buffer
+000080  1  A4 DF        @L0080:  ldy     z:Buffer
+000082  1  B1 FA                 lda     (L00FA),y
+000084  1  F0 0A                 beq     @L0090
+000086  1  A0 00                 ldy     #$00
+000088  1  91 FA                 sta     (L00FA),y
+00008A  1  20 63 1F              jsr     INCPT
+00008D  1  18                    clc
+00008E  1  90 F0                 bcc     @L0080
+000090  1               
+000090  1  20 C2 01     @L0090:  jsr     Prt_star
+000093  1  E6 DF                 inc     z:Buffer
+000095  1  D0 09                 bne     @L00A0
+000097  1  F0 25                 beq     @L00BE
+000099  1               
+000099  1  20 5A 1E     @L0099:  jsr     GETCH
+00009C  1  C9 08                 cmp     #$08
+00009E  1  D0 0E                 bne     @L00AE
+0000A0  1  38           @L00A0:  sec
+0000A1  1  A5 FA                 lda     z:L00FA
+0000A3  1  E9 01                 sbc     #$01
+0000A5  1  85 FA                 sta     z:L00FA
+0000A7  1  B0 02                 bcs     @L00AB
+0000A9  1  C6 FB                 dec     z:L00FB
+0000AB  1  18           @L00AB:  clc
+0000AC  1  90 EB                 bcc     @L0099
+0000AE  1               
+0000AE  1  C9 1B        @L00AE:  cmp     #ESC
+0000B0  1  F0 12                 beq     @L00C4
+0000B2  1  C9 0D                 cmp     #RET
+0000B4  1  D0 05                 bne     @L00BB
+0000B6  1  20 2F 1E              jsr     CR
+0000B9  1  A9 0D                 lda     #$0d
+0000BB  1  C8           @L00BB:  iny
+0000BC  1  91 FA                 sta     (L00FA),y
+0000BE  1  20 63 1F     @L00BE:  jsr     INCPT
+0000C1  1  18                    clc
+0000C2  1  90 D5                 bcc     @L0099
+0000C4  1               
+0000C4  1  C8           @L00C4:  iny
+0000C5  1  A9 3E                 lda     #$3e
+0000C7  1  91 FA                 sta     (L00FA),y
+0000C9  1  20 63 1F              jsr     INCPT
+0000CC  1  98                    tya
+0000CD  1  91 FA                 sta     (L00FA),y
+0000CF  1  20 63 1F              jsr     INCPT
+0000D2  1  A5 FA                 lda     z:L00FA
+0000D4  1  8D F7 17              sta     hyBYT
+0000D7  1  A5 FB                 lda     z:L00FB
+0000D9  1  8D F8 17              sta     loBYT
+0000DC  1  4C 00 00              jmp     init
+0000DF  1               
+0000DF  1  00 00 00 00  Buffer:  .res    19,$00
+0000E3  1  00 00 00 00  
+0000E7  1  00 00 00 00  
+0000F2  1  00           L00F2:   .byte   $00
+0000F3  1  00                    .byte   $00
+0000F4  1  00           TAPE_ID: .byte   $00
+0000F5  1  00                    .byte   $00
+0000F6  1  00                    .byte   $00
+0000F7  1  00                    .byte   $00
+0000F8  1  00                    .byte   $00
+0000F9  1  00           L00F9:   .byte   $00
+0000FA  1  00           L00FA:   .byte   $00
+0000FB  1  00           L00FB:   .byte   $00
+0000FC  1               
+0000FC  1               
+0000FC  1               ;part2
+0000FC  1               		 .org 	 $0100
+000100  1               
+000100  1  A9 00        load:    lda     #$00
+000102  1  85 FA                 sta     L00FA
+000104  1  A9 02                 lda     #$02
+000106  1  85 FB                 sta     L00FB
+000108  1  A9 7F                 lda     #$7f
+00010A  1  8D 41 17              sta     PADD
+00010D  1  A9 13                 lda     #$13
+00010F  1  8D 42 17              sta     SBD
+000112  1  20 41 1A     @L0112:  jsr     RDBIT
+000115  1  46 F3                 lsr     TAPE_ID-1
+000117  1  05 F3                 ora     TAPE_ID-1
+000119  1  85 F3                 sta     TAPE_ID-1
+00011B  1  8D 40 17              sta     SAD
+00011E  1  C9 16        @L011E:  cmp     #$16
+000120  1  D0 F0                 bne     @L0112
+000122  1  20 24 1A              jsr     RDCHT
+000125  1  8D 40 17              sta     SAD
+000128  1  C9 2A                 cmp     #$2a
+00012A  1  D0 F2                 bne     @L011E
+00012C  1  20 24 1A              jsr     RDCHT
+00012F  1  C5 F4                 cmp     TAPE_ID
+000131  1  F0 0C                 beq     @L013F
+000133  1  20 8C 1E              jsr     INIT1
+000136  1  20 A0 1E              jsr     OUTCH
+000139  1  20 9E 1E              jsr     SPACE
+00013C  1  4C 00 01              jmp     load
+00013F  1               
+00013F  1  91 FA        @L013F:  sta     (L00FA),y
+000141  1  20 63 1F              jsr     INCPT
+000144  1  20 24 1A              jsr     RDCHT
+000147  1  AA                    tax
+000148  1  D0 F5                 bne     @L013F
+00014A  1  91 FA                 sta     (L00FA),y
+00014C  1  20 8C 1E     L014C:   jsr     INIT1
+00014F  1  20 1E 1E              jsr     PRTPNT
+000152  1  4C 00 00              jmp     init
+000155  1               
+000155  1  00                    .byte   $00
+000156  1  00                    .byte   $00
+000157  1               
+000157  1  A9 00        save:    lda     #$00
+000159  1  85 FA                 sta     L00FA
+00015B  1  A9 02                 lda     #$02
+00015D  1  85 FB                 sta     L00FB
+00015F  1  A9 27                 lda     #$27
+000161  1  85 F5                 sta     TAPE_ID+1
+000163  1  85 F4                 sta     TAPE_ID
+000165  1  A9 BF                 lda     #$bf
+000167  1  8D 43 17              sta     TimINIT-1
+00016A  1  A9 16        @L016A:  lda     #$16
+00016C  1  20 88 01              jsr     @L0188
+00016F  1  C6 F4                 dec     TAPE_ID
+000171  1  D0 F7                 bne     @L016A
+000173  1  A9 2A                 lda     #$2a
+000175  1  20 88 01              jsr     @L0188
+000178  1  A0 00        @L0178:  ldy     #$00
+00017A  1  B1 FA                 lda     (L00FA),y
+00017C  1  20 63 1F              jsr     INCPT
+00017F  1  48                    pha
+000180  1  20 88 01              jsr     @L0188
+000183  1  68                    pla
+000184  1  D0 F2                 bne     @L0178
+000186  1  F0 C4                 beq     L014C
+000188  1               
+000188  1  A0 07        @L0188:  ldy     #$07
+00018A  1  84 F2                 sty     L00F2
+00018C  1  A0 02        @L018C:  ldy     #$02
+00018E  1  84 F3                 sty     TAPE_ID-1
+000190  1  BE BE 01     @L0190:  ldx     @L01BE,y
+000193  1  48                    pha
+000194  1  2C 47 17     @L0194:  bit     TIMER
+000197  1  10 FB                 bpl     @L0194
+000199  1  B9 BF 01              lda     @L01BF,y
+00019C  1  8D 44 17              sta     TimINIT
+00019F  1  A5 F5                 lda     TAPE_ID+1
+0001A1  1  49 80                 eor     #$80
+0001A3  1  8D 42 17              sta     SBD
+0001A6  1  85 F5                 sta     TAPE_ID+1
+0001A8  1  CA                    dex
+0001A9  1  D0 E9                 bne     @L0194
+0001AB  1  68                    pla
+0001AC  1  C6 F3                 dec     TAPE_ID-1
+0001AE  1  F0 05                 beq     @L01B5
+0001B0  1  30 07                 bmi     @L01B9
+0001B2  1  4A                    lsr     A
+0001B3  1  90 DB                 bcc     @L0190
+0001B5  1  A0 00        @L01B5:  ldy     #$00
+0001B7  1  F0 D7                 beq     @L0190
+0001B9  1               
+0001B9  1  C6 F2        @L01B9:  dec     L00F2
+0001BB  1  10 CF                 bpl     @L018C
+0001BD  1  60                    rts
+0001BE  1               
+0001BE  1  02           @L01BE:  .byte   $02
+0001BF  1  C3           @L01BF:  .byte   $c3
+0001C0  1  03                    .byte   $03
+0001C1  1  7E                    .byte   $7e
+0001C2  1               
+0001C2  1               Prt_star:
+0001C2  1  A9 2A                 lda     #asterix
+0001C4  1  20 A0 1E              jsr     OUTCH
+0001C7  1  20 2F 1E              jsr     CR
+0001CA  1  60                    rts
+0001CB  1               
+0001CB  1  20 5A 1E     LOADchk: jsr     GETCH
+0001CE  1  C9 7E                 cmp     #TILDE
+0001D0  1  D0 0B                 bne     SAVEchk
+0001D2  1  20 5A 1E              jsr     GETCH
+0001D5  1  85 F4                 sta     TAPE_ID
+0001D7  1  20 2F 1E              jsr     CR
+0001DA  1  4C 00 01              jmp     load
+0001DD  1               
+0001DD  1  C9 5E        SAVEchk: cmp     #HAT
+0001DF  1  D0 0C                 bne     return
+0001E1  1  20 5A 1E              jsr     GETCH
+0001E4  1  8D 00 02              sta     $0200
+0001E7  1  20 9E 1E              jsr     SPACE
+0001EA  1  4C 57 01              jmp     save
+0001ED  1               
+0001ED  1  4C 1D 00     return:  jmp     L001D
+0001F0  1               
+0001F0  1               
