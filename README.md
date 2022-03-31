@@ -1,8 +1,11 @@
-# Telefonbuch2-for-KIM-1
-Telefonbuch 2.0<br>
+# Phonebook 2.0 for KIM-1
+
+original title: "Datensuche" <br>
 by Herwig Feichtinger <br>
 (c) 1981 in Anwendungsbeispiele<br>
     für den Mikroprozessor 6502
+
+Advanced Version of https://github.com/netzherpes/phonebook-for-KIM-1
 
 # Instructions:
 
