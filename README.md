@@ -5,7 +5,7 @@ by Herwig Feichtinger <br>
 (c) 1981 in Anwendungsbeispiele<br>
     für den Mikroprozessor 6502
 
-![Phonebook_2.0](https://github.com/netzherpes/Telefonbuch2-for-KIM-1/raw/main/images/phonebook2.png)
+![Phonebook_2.0](https://github.com/netzherpes/Telefonbuch2-for-KIM-1/raw/main/images/phonebook2c.png)
 
 Advanced Version of https://github.com/netzherpes/phonebook-for-KIM-1
 
@@ -26,8 +26,7 @@ After the start you are in search mode.
 SEARCH: Enter a keyword and whole matching 
 Lines of text will be presented. 
 
-SWITCH to entry mode by pressing ESC
-After you added or changed an entry you
+SWITCH to data entry mode by pressing ESC
 
 CHANGE a line: Switch to data entry mode (ESC) 
 and enter an identifying text to change,
